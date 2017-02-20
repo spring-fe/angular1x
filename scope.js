@@ -64,3 +64,34 @@ Scope.prototype.$apply = function(expr){
 		this.$digest();
 	}
 }
+
+var scope = new Scope();
+scope.firstName = 'Joe';
+scope.cope.counter = 0;
+
+scope.$watch(
+	function(scope){
+		return scope.counter;
+	},
+	function(newValue, oldValue, scope){
+		scope.counterIsTwo = (newValue ===2);
+	}
+);
+scope.$watch(
+	function(scope){
+		return scope.firstName;
+	},
+	function(newValue, oldValue, scope){
+		scope.counter++;
+	}
+);
+
+//After the first digest the counter is 1
+scope.$digest();
+console.assert(scope.counter === 1);//正确
+
+// On the next change the counter becomes two, and the other watch listener is also run because of the dirty check
+scope.firstName = 'Jane';
+scope.$digest();
+console.assert(scope.counter === 2);//正确
+console.assert(scope.counterIsTwo);//正确
